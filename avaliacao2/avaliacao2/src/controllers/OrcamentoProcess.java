@@ -11,17 +11,23 @@ public class OrcamentoProcess {
 	public static ArrayList<Orcamento> orcamentos = new ArrayList<>();
 	private static OrcamentoDAO od = new OrcamentoDAO();
 	
-	public void compararProdutos(String produto) {
-		int barato = 0;
-		double precoBarato = 99999;
+	public static void compararProdutos(String produto) {
+		int indexBarato = 0;
+		double barato = 9999999;
 		for (Orcamento orcamento : orcamentos) {
-		if (orcamento.getProduto() == produto && orcamento.getPreço() < precoBarato) {
-			barato = orcamentos.indexOf(orcamento);
-			precoBarato = orcamento.getPreço();
+			if (orcamento.getProduto().equals(produto) && orcamento.getPreço() < barato) {
+			indexBarato = orcamentos.indexOf(orcamento);
+			barato = orcamento.getPreço();
 			}
 		}
 		
-		orcamentos.get(barato).setMaisBarato(true);
+		for (Orcamento orcamento : orcamentos) {
+			if (orcamentos.indexOf(orcamento) == indexBarato) {
+				orcamento.setBarato(true);
+			} else if(orcamento.getProduto() == produto){
+				orcamento.setBarato(false);
+			}
+		}
 	}
 	public static void abrir() {
 		orcamentos = od.ler();

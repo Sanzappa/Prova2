@@ -1,6 +1,7 @@
 package viewers;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 
@@ -8,20 +9,24 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import controllers.OrcamentoProcess;
+import models.Orcamento;
 
-public class OrcamentoForm extends JFrame{
+public class OrcamentoForm extends JFrame implements ActionListener{
 
 	private JPanel painel;
 	private JLabel Id, fornecedor, produto, preco;
 	private JTextField tfId, tfFornecedor, tfProduto, tfPreco;
 	private JButton adicionar, alterar, excluir, buscar;
-	private JTextArea texto;
+	private JTextArea verResultado;
 	private int autoId = OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1;
+	private String texto = "";
+	
 	
 	OrcamentoForm(){
 		setTitle("Tela de usuario");
@@ -64,12 +69,12 @@ public class OrcamentoForm extends JFrame{
 		excluir.setEnabled(false);
 		alterar.setBounds(500, 200, 110, 30);
 		
-		texto = new JTextArea();
-		texto.setBounds(10, 280, 760, 250);
-		texto.setEnabled(true);
-		texto.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
-		texto.setEnabled(false); 
-		
+		verResultado = new JTextArea();
+		verResultado.setBounds(10, 280, 760, 250);
+		verResultado.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
+		comparar();
+		preencherAreaDeTexto();
+		verResultado.setEditable(false);
 		
 		painel.add(Id);
 		painel.add(tfId);
@@ -87,7 +92,153 @@ public class OrcamentoForm extends JFrame{
 		painel.add(alterar);
 		painel.add(excluir);
 		painel.add(buscar);
-		painel.add(texto);
+		painel.add(verResultado);
+		adicionar.addActionListener(this);
+		alterar.addActionListener(this);
+		buscar.addActionListener(this);
+		excluir.addActionListener(this);
+	}
+	
+	private void adicionar() {
+		
+		if (tfFornecedor.getText().length() != 0 && tfProduto.getText().length() !=0 && tfPreco.getText().length() !=0) {
+			
+			OrcamentoProcess.orcamentos.add(new Orcamento(autoId, tfFornecedor.getText().toString(), tfProduto.getText().toString(),
+					Double.parseDouble(tfPreco.getText().replace(",", ".")), false));
+			
+		} else {
+			JOptionPane.showMessageDialog(this, "Please, preenche com todas as informações.");
+		}
+		
+		autoId++;
+		limpar();
+		comparar();
+		preencherAreaDeTexto();
+		OrcamentoProcess.salvar();
+	}
+	
+	private void buscar() {
+		String entrada = JOptionPane.showInputDialog(this,"Digite o id da Manutenção");
+
+		boolean isNumeric = true;
+		if (entrada != null) {
+			for (int i = 0; i < entrada.length(); i++) {
+				if (!Character.isDigit(entrada.charAt(i))) {
+					isNumeric = false;
+				}
+			}
+		}else {
+			isNumeric = false;
+		}
+		if (isNumeric) {
+			int id = Integer.parseInt(entrada);
+			
+			boolean achou = false;
+			for (Orcamento orcamento : OrcamentoProcess.orcamentos) {
+				if (orcamento.getId() == id) {
+					achou = true;
+					int indice = OrcamentoProcess.orcamentos.indexOf(orcamento);
+					tfId.setText(OrcamentoProcess.orcamentos.get(indice).getId("s"));
+					tfFornecedor.setText(OrcamentoProcess.orcamentos.get(indice).getFornecedor());
+					tfProduto.setText(OrcamentoProcess.orcamentos.get(indice).getProduto());
+					tfPreco.setText(OrcamentoProcess.orcamentos.get(indice).getPreço("s"));
+					OrcamentoProcess.salvar();
+					adicionar.setEnabled(false);
+					alterar.setEnabled(true);
+					excluir.setEnabled(true);
+					break;
+				}
+			}
+			
+			if (!achou) {
+				JOptionPane.showMessageDialog(this, "Seu ID não foi encontrado");
+			}
+				
+			
+		}
+
+	}
+	
+	private void alterar() {
+		int id = Integer.parseInt(tfId.getText());
+		int indice = -1;
+		
+		for (Orcamento orca : OrcamentoProcess.orcamentos) {
+			if(orca.getId() == id) {
+			indice = OrcamentoProcess.orcamentos.indexOf(orca);
+		}
+	}
+		if (tfFornecedor.getText().length() != 0 && tfProduto.getText().length() !=0 && tfPreco.getText().length() !=0) {
+
+			OrcamentoProcess.orcamentos.set(indice, new Orcamento(autoId, tfFornecedor.getText().toString(),
+					tfProduto.getText().toString(),Double.parseDouble(tfPreco.getText().toString()), false));
+			preencherAreaDeTexto();
+			limpar();
+			
+		} else {
+			JOptionPane.showMessageDialog(this, "Preencha todos os campos por favor");
+		}
+		adicionar.setEnabled(true);
+		alterar.setEnabled(false);
+		excluir.setEnabled(false);
+		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 1));
+		OrcamentoProcess.salvar();
+		comparar();
+	}
+	
+	private void excluir(){
+		int id = Integer.parseInt(tfId.getText());
+		int indice = -1;
+		for (Orcamento orca : OrcamentoProcess.orcamentos) {
+			if (orca.getId() == id) {
+				indice = OrcamentoProcess.orcamentos.indexOf(orca);
+			}
+		}
+		
+		OrcamentoProcess.orcamentos.remove(indice);
+		preencherAreaDeTexto();
+		limpar();
+		adicionar.setEnabled(true);
+		alterar.setEnabled(false);
+		excluir.setEnabled(false);
+		OrcamentoProcess.salvar();
+		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 1));
+		comparar();
+	}
+	
+	private void preencherAreaDeTexto() {
+		texto = "";
+		for (Orcamento p : OrcamentoProcess.orcamentos) {
+			texto += p.toString()+"\n";
+		}
+		verResultado.setText(texto);
+	}
+	
+	private void limpar() {
+		tfFornecedor.setText(null);
+		tfProduto.setText(null);
+		tfPreco.setText(null);
+	}
+	
+	public void comparar() {
+		for (Orcamento orcamento : OrcamentoProcess.orcamentos) {
+			OrcamentoProcess.compararProdutos(orcamento.getProduto());
+			}
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == adicionar) {
+			adicionar();
+		}
+		if (e.getSource() == buscar) {
+			buscar();
+		}
+		if (e.getSource() == alterar) {
+			alterar();
+		}
+		if (e.getSource() == excluir) {
+			excluir();
+		}
 		
 	}
 	

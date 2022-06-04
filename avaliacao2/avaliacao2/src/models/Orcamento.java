@@ -9,14 +9,14 @@ public class Orcamento {
 	private String fornecedor;
 	private String produto;
 	private Double preço;
-	private boolean maisBarato;
+	private boolean barato;
 	
-	public Orcamento(int id, String fornecedor, String produto, double preço, boolean maisBarato) {
+	public Orcamento(int id, String fornecedor, String produto, double preço, boolean barato) {
 		this.id = id;
 		this.fornecedor = fornecedor;
 		this.produto = produto;
 		this.preço = preço;
-		this.maisBarato = maisBarato;
+		this.barato = barato;
 	}
 	
 	public Orcamento(String linha) {
@@ -25,12 +25,17 @@ public class Orcamento {
 		this.fornecedor = temp[1];
 		this.produto = temp[2];
 		this.preço = Double.parseDouble(temp[3]);
-		this.maisBarato = false;
+		this.barato = false;
+	}
+	
+	public String getId(String s) {
+		return String.format("%d", id);
 	}
 	
 	public int getId() {
 		return id;
 	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -46,21 +51,26 @@ public class Orcamento {
 	public void setProduto(String produto) {
 		this.produto = produto;
 	}
-	public Double getPreço() {
+	public String getPreço(String s) {
+		return String.format("%.2f", preço);
+	}
+	
+	public double getPreço() {
 		return preço;
 	}
+	
 	public void setPreço(Double preço) {
 		this.preço = preço;
 	}
 	public boolean isMaisBarato() {
-		return maisBarato;
+		return barato;
 	}
-	public void setMaisBarato(boolean maisBarato) {
-		this.maisBarato = maisBarato;
+	public void setBarato(boolean barato) {
+		this.barato = barato;
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(fornecedor, id, maisBarato, preço, produto);
+		return Objects.hash(fornecedor, id, barato, preço, produto);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -71,18 +81,16 @@ public class Orcamento {
 		if (getClass() != obj.getClass())
 			return false;
 		Orcamento other = (Orcamento) obj;
-		return Objects.equals(fornecedor, other.fornecedor) && id == other.id && maisBarato == other.maisBarato
-				&& Objects.equals(preço, other.preço) && Objects.equals(produto, other.produto);
+		return Objects.equals(fornecedor, other.fornecedor) && id == other.id && barato == other.barato
+				&& Double.doubleToLongBits(preço) == Double.doubleToLongBits(other.preço) && Objects.equals(produto, other.produto);
 	}
 	
 	@Override
 	public String toString() {
-		return id + "\t" + fornecedor + "\t" + produto + "\t" + preço
-				+ "\t"+ maisBarato;
+		return id + "\t" + fornecedor + "\t" + produto + "\t" + String.format("%.2f",preço)
+				+ "\t"+ barato;
 	}
-
 	public String toCSV() {
-		return id + ";" + fornecedor + ";" + produto + ";" + preço + ";"+ maisBarato;
+		return id + ";" + fornecedor + ";" + produto + ";" + preço + ";"+ barato;
 	}
-	
 }
