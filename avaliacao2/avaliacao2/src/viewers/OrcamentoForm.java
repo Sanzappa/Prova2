@@ -170,20 +170,21 @@ public class OrcamentoForm extends JFrame implements ActionListener{
 	}
 		if (tfFornecedor.getText().length() != 0 && tfProduto.getText().length() !=0 && tfPreco.getText().length() !=0) {
 
-			OrcamentoProcess.orcamentos.set(indice, new Orcamento(autoId, tfFornecedor.getText().toString(),
-					tfProduto.getText().toString(),Double.parseDouble(tfPreco.getText().toString()), false));
+			OrcamentoProcess.orcamentos.set(indice, new Orcamento(Integer.parseInt(tfId.getText().toString()), tfFornecedor.getText().toString(),
+					tfProduto.getText().toString(),Double.parseDouble(tfPreco.getText().toString().replace(",", ".")), false));
+			comparar();
 			preencherAreaDeTexto();
 			limpar();
-			
 		} else {
 			JOptionPane.showMessageDialog(this, "Preencha todos os campos por favor");
 		}
 		adicionar.setEnabled(true);
 		alterar.setEnabled(false);
 		excluir.setEnabled(false);
-		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 1));
+		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 2));
+		
 		OrcamentoProcess.salvar();
-		comparar();
+		
 	}
 	
 	private void excluir(){
@@ -196,6 +197,7 @@ public class OrcamentoForm extends JFrame implements ActionListener{
 		}
 		
 		OrcamentoProcess.orcamentos.remove(indice);
+		comparar();
 		preencherAreaDeTexto();
 		limpar();
 		adicionar.setEnabled(true);
@@ -203,7 +205,7 @@ public class OrcamentoForm extends JFrame implements ActionListener{
 		excluir.setEnabled(false);
 		OrcamentoProcess.salvar();
 		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 1));
-		comparar();
+		
 	}
 	
 	private void preencherAreaDeTexto() {
