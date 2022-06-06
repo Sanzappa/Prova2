@@ -110,7 +110,7 @@ public class OrcamentoForm extends JFrame implements ActionListener{
 			JOptionPane.showMessageDialog(this, "Please, preenche com todas as informações.");
 		}
 		
-		autoId++;
+		tfId.setText("" + (OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1));
 		limpar();
 		comparar();
 		preencherAreaDeTexto();
@@ -181,7 +181,7 @@ public class OrcamentoForm extends JFrame implements ActionListener{
 		adicionar.setEnabled(true);
 		alterar.setEnabled(false);
 		excluir.setEnabled(false);
-		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 2));
+		tfId.setText("" + (OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1));
 		
 		OrcamentoProcess.salvar();
 		
@@ -204,7 +204,7 @@ public class OrcamentoForm extends JFrame implements ActionListener{
 		alterar.setEnabled(false);
 		excluir.setEnabled(false);
 		OrcamentoProcess.salvar();
-		tfId.setText(String.format("%d", OrcamentoProcess.orcamentos.size() + 1));
+		tfId.setText("" + (OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1));
 		
 	}
 	
